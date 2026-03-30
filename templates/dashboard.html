@@ -156,7 +156,7 @@
             <small class="text-muted"><i class="bi bi-calendar me-1"></i>Enrolled: {{ course.enrolled_at[:10] }}</small>
           </div>
           <div class="card-footer bg-transparent border-0 px-4 pb-4">
-            <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn lh-btn-primary w-100">
+            <a href="{{ url_for('learn', course_id=course.id) }}" class="btn lh-btn-primary w-100">
               <i class="bi bi-play-circle me-1"></i>Continue
             </a>
           </div>

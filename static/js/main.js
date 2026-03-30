@@ -1,17 +1,11 @@
-/* ═══════════════════════════════════════════════════════
-   LearnHub — Main JavaScript (jQuery + Bootstrap)
-═══════════════════════════════════════════════════════ */
-
 $(document).ready(function () {
 
-  /* ── Auto-dismiss flash messages after 4 seconds ────── */
   setTimeout(function () {
     $('#flash-container .alert').each(function () {
       $(this).fadeOut(500, function () { $(this).remove(); });
     });
   }, 4000);
 
-  /* ── Navbar: highlight active link ─────────────────── */
   var currentPath = window.location.pathname;
   $('.navbar-nav .nav-link').each(function () {
     var href = $(this).attr('href');
@@ -22,13 +16,11 @@ $(document).ready(function () {
     }
   });
 
-  /* ── Smooth scroll to top on logo click ─────────────── */
   $('a[href="#top"]').on('click', function (e) {
     e.preventDefault();
     $('html, body').animate({ scrollTop: 0 }, 400);
   });
 
-  /* ── Course cards: stagger fade-in on courses page ──── */
   if ($('#course-grid').length) {
     $('#course-grid .course-item').each(function (i) {
       var $item = $(this);
@@ -44,7 +36,6 @@ $(document).ready(function () {
     });
   }
 
-  /* ── Back-to-top button ─────────────────────────────── */
   var $backTop = $('<button class="lh-back-top btn lh-btn-primary"><i class="bi bi-arrow-up"></i></button>');
   $backTop.css({
     position: 'fixed', bottom: '24px', right: '24px',
@@ -65,7 +56,6 @@ $(document).ready(function () {
     $('html, body').animate({ scrollTop: 0 }, 400);
   });
 
-  /* ── Tooltip initialization ─────────────────────────── */
   var tooltipEls = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   tooltipEls.forEach(function (el) {
     new bootstrap.Tooltip(el);

@@ -8,7 +8,6 @@ app.secret_key = 'learnhub_secret_key_2024'
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'learnhub.db')
 
-# ─── Database Setup ────────────────────────────────────────────────────────────
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -42,7 +41,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# ─── Static Course Data ─────────────────────────────────────────────────────────
 
 COURSES = [
     {
@@ -69,7 +67,7 @@ COURSES = [
         'level': 'Intermediate',
         'students': 3210,
         'rating': 4.7,
-        'price': '₹999',
+        'price': 'Free',
         'icon': 'bi-globe',
         'color': '#10B981',
         'description': 'Full-stack web development using HTML, CSS, JavaScript, Bootstrap, and Flask from scratch.',
@@ -84,7 +82,7 @@ COURSES = [
         'level': 'Intermediate',
         'students': 2890,
         'rating': 4.9,
-        'price': '₹1499',
+        'price': 'Free',
         'icon': 'bi-bar-chart-fill',
         'color': '#8B5CF6',
         'description': 'Explore data analysis, visualization, and machine learning basics using Python, Pandas, and Matplotlib.',
@@ -114,7 +112,7 @@ COURSES = [
         'level': 'Advanced',
         'students': 5120,
         'rating': 4.9,
-        'price': '₹2499',
+        'price': 'Free',
         'icon': 'bi-cpu-fill',
         'color': '#EF4444',
         'description': 'Comprehensive ML course covering supervised, unsupervised learning, neural networks, and deployment.',
@@ -129,7 +127,7 @@ COURSES = [
         'level': 'Beginner',
         'students': 2100,
         'rating': 4.5,
-        'price': '₹799',
+        'price': 'Free',
         'icon': 'bi-cloud-fill',
         'color': '#06B6D4',
         'description': 'Get started with cloud platforms — AWS, Azure, and GCP — and deploy real applications.',
@@ -137,7 +135,6 @@ COURSES = [
     }
 ]
 
-# ─── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -202,6 +199,31 @@ def enroll(course_id):
         return redirect(url_for('success'))
     conn.close()
     return redirect(url_for('course_detail', course_id=course_id))
+
+
+@app.route('/learn/<int:course_id>')
+def learn(course_id):
+    if 'user_id' not in session:
+        flash('Please log in to access your course.', 'warning')
+        return redirect(url_for('login'))
+    
+    course = next((c for c in COURSES if c['id'] == course_id), None)
+    if not course:
+        flash('Course not found.', 'danger')
+        return redirect(url_for('courses'))
+    
+    conn = get_db()
+    enrolled = conn.execute(
+        'SELECT id FROM enrollments WHERE user_id=? AND course_id=?',
+        (session['user_id'], course_id)
+    ).fetchone()
+    conn.close()
+    
+    if not enrolled:
+        flash('You must be enrolled to access this course.', 'warning')
+        return redirect(url_for('course_detail', course_id=course_id))
+        
+    return render_template('learn.html', course=course)
 
 
 @app.route('/success')
@@ -336,6 +358,8 @@ def contact():
     return render_template('contact.html')
 
 
+init_db()
+
 if __name__ == '__main__':
-    init_db()
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
